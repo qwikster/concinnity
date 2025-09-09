@@ -1,6 +1,6 @@
 # concinnity
-clean and aesthetic CLI counter tool!
-    > harmony or elegance of design in adaptation of parts to a whole or to each other
+clean and aesthetic CLI counter tool!\
+> harmony or elegance of design in adaptation of parts to a whole or to each other
 
 ## features
 - easy to use theme management and configuration!
@@ -15,11 +15,14 @@ clean and aesthetic CLI counter tool!
 - this app will save automatically when you modify any counter!
 
 ## installation
-`pip install concinnity`, or if you're on certain flavors of linux (it'll tell you) `pipx install concinnity`. please don't install from github!
+`pip install concinnity`, or if you're on certain flavors of linux (it'll tell you) `pipx install concinnity`.\
+please don't install from github!\
 arch: `sudo pacman -S python-pipx` to get that tool
 
 ## usage
-you can run the command `concinnity`, but i will admit it's a pain to memorize - feel free to type `counter` instead :)
+you can run the command `concinnity`, but i will admit it's a pain to memorize...\
+feel free to type `counter` instead :)
 
 ## source
-certain amounts of my code from [hackaclime](https://github.com/qwikster/hackaCLIme/) was reused in this project; however, no AI was used.
+certain amounts of my code from [hackaclime](https://github.com/qwikster/hackaCLIme/) was reused in this project;\
+however, no AI was used.
