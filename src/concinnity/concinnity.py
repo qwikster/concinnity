@@ -100,16 +100,25 @@ def main():
                 longest = 0
                 for i in range(len(counter_name)):
                     if len(counter_name[i]) > longest:
-                        longname = counter_name[i]
                         longest = len(counter_name[i])
-                        
-                for i in range(size_x // (longest + 5)): # LEFT OFF HERE: need to figure out how to split longest + 5 into rows based on how large the boxes will be
-                    print("╭", end = "")
-                    for j in range(longest + 2):
-                        print("─", end = "")
-                    print("╮ ", end = "")
-                print("\n")
-                print_buffer()
+                
+                panels_wide = (size_x // longest + 5)
+
+                for line in range(0, len(counter_name), panels_wide):
+                    for i in range(len(counter_name)):
+                        print("╭", end = "")
+                        for num in range(longest + 2):
+                            print("─", end = "")
+                        print("╮ ", end = "")
+                    print(" ")
+
+                    for i in range(len(counter_name)):
+                        print("│ ", end = "")
+                        name_padded = counter_name[i].center(longest)
+                        print(name_padded, end = "")
+                        print(" │ ", end = "")
+                    print(" ")
+                    print_buffer()
                 
             time.sleep(0.5)
                     
