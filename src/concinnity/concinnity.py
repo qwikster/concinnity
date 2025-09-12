@@ -174,46 +174,36 @@ def main():
             
             elif len(counter_name) >= 1: # need to figure out a way to justify lines. unequal sizes of counters, maybe? an option for this?
                 clear()
-                longest = max(len(name) for name in counter_name)
-                
-                panel_width = longest + 5
-                panels_wide = max(1, size_x // panel_width)
-                
-                for row_start in range(0, len(counter_name), panels_wide):
-                    row = counter_name[row_start:row_start + panels_wide]
-                    actual_print(row)
+                i = 0
+                while i < len(counter_name):
+                    line_boxes = []
+                    used_width = 0
                     
-                    for _ in row:
-                        print("╭" + "─" * (longest + 2) + "╮ ", end = "")
-                    print()
-                    
-                    for name in row:
-                        name_padded = name.center(longest)
-                        print(f"│ {name_padded} │ ", end = "")
-                    print()
-                    
-                    for _ in row:
-                        print("╞" + "═" * (longest + 2) + "╡ ", end = "")
-                    print()
-                    
-                    for name in row:
-                        find_val = counter_name.index(name)
-                        print("│+│" + str(counter_val[find_val]).center(longest - 2) + "│-│ ", end = "")
-                    print()
-                    
-                    for _ in row:
-                        print("╞" + "═" * (longest + 2) + "╡ ", end = "")
-                    print()
-                    
-                    for name in row:
-                        gap = str(" ").center(longest - 4)
-                        print("│- " + decrement[counter_name.index(name)] + gap + increment[counter_name.index(name)] + " +│ ", end = "")
-                    print()
-                    
-                    for _ in row:
-                        print("╰" + "─" * (longest + 2) + "╯ ", end = "")
-                    print()
-                    
+                    while i < len(counter_name):
+                        name = counter_name[i]
+                        val = str(counter_val[i])
+                        inc = increment[i]
+                        dec = decrement[i]
+                        
+                        inner_width = max(len(name), len(val), len(f"{dec}  {inc}"))
+                        box_width = inner_width + 4
+                        
+                        if used_width + box_width > size_x:
+                            break
+                        
+                        top = "╭" + "─" * (inner_width + 2) + "╮"
+                        name_l = f"│ {name.center(inner_width)} │"
+                        val_l = f"│ {val.center(inner_width)} │"
+                        keys_l = f"│ {dec.ljust(inner_width // 2)}{inc.rjust(inner_width // 2)} │ "
+                        bottom = "╰" + "─" * (inner_width + 2) + "╯"
+
+                        line_boxes.append((top, name_l, val_l, keys_l, bottom))
+                        used_width += box_width + 1
+                        i += 1
+                        
+                    for row in zip(*line_boxes):
+                        print(" ".join(row))
+                        
                 print_buffer()
             
             time.sleep(0.2)
