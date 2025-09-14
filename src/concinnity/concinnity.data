@@ -1,0 +1,10 @@
+﻿[data]
+counters_default = ['apples', 'cranberries', 'cantaloupes', 'clementines', 'peaches', 'apricots', 'blueberries', 'mangoes', 'cherries', 'blackberries', 'currants', 'lemons', 'strawberries', 'tetopears', 'limes', 'watermelons', 'pineapples', 'pears', 'tangerines', 'mandarin', 'grapefruit', 'kiwis', 'bananas', 'nectarines', 'dates', 'oranges', 'plums', 'raspberries']
+increment_default = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';']
+decrement_default = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
+title_hint = [h]elp, [\] quit
+counter_name = []
+counter_val = []
+increment = []
+decrement = []
+

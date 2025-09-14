@@ -5,7 +5,6 @@ import sys
 import configparser
 import random
 import shutil
-from pathlib import Path
 from queue import Queue, Empty
 import threading
 
@@ -13,7 +12,7 @@ counters_default = ["apples", "apricots", "bananas", "blackberries", "blueberrie
 random.shuffle(counters_default)
 increment_default = list("1234567890asdfghjkl;")
 decrement_default = list("qwertyuiopzxcvbnm,./")
-title_hint = "[h]elp, [q]uit" 
+title_hint = "[h]elp, [\\] quit" 
 title_msg = ""
 
 counter_val = []
@@ -87,6 +86,7 @@ def on_press(key: str):
 def handle_exit(exc_type, exc_value, exc_traceback):
     if exc_type is KeyboardInterrupt:
         actual_print("peace out")
+        sys.exit(0)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
 
@@ -128,7 +128,7 @@ def new_counter():
         actual_print(f"{counter_name}, {increment}, {decrement}, {counter_val}")
 
 def del_counter(key):
-    global counter_name, counter_val, increment, decrement
+    global counter_name, counter_val, increment, decrement, title_msg
     if key == "-":
         return
     else:
@@ -138,22 +138,71 @@ def del_counter(key):
             try:
                 del_key = decrement.index(key)
             except ValueError:
-                actual_print("this counter doesn't exist!") # print this inside the title bar? am i making a title bar? think about this
+                actual_print("this counter doesn't exist!")
                 time.sleep(3)
         increment.pop(del_key)
         decrement.pop(del_key)
         counter_name.pop(del_key)
         counter_val.pop(del_key)
 
+def help_menu():
+    size_x, size_y = shutil.get_terminal_size((20, 20))
+    
+    clear()
+    print("┏" + "━" * (size_x - 3) + "┓")
+    print(f"┃ concinnity: {"help".ljust(size_x - 16)}┃")
+    print("┠───┬" + "─" * (size_x - 7) + "┨")
+    print(f"┃=/+│ {" Create a new counter".ljust(size_x - 8)}┃")
+    print(f"┃ - │ {" Delete a counter".ljust(size_x - 8)}┃")
+    print(f"┃ [ │ {" Edit a name".ljust(size_x - 8)}┃")
+    print(f"┃ ] │ {" Change to a color".ljust(size_x - 8)}┃")
+    print(f"┃~/`│ {" Manually choose value".ljust(size_x - 8)}┃")
+    print("┠───┴" + "─" * (size_x - 7) + "┨")
+    print("┃" + " Hit [ENTER] to return".ljust(size_x - 3) + "┃")
+    print("┗" + "━" * (size_x - 3) + "┛")
+    
+    print_buffer()
+    input("")
+
 def main():
     global active, key_queue, listener_thread, title_msg, title_hint
-    global counter_name, increment, decrement
+    global counter_name, increment, decrement, counter_val
+    global theme, storage, theme_path, storage_path
     
     sys.excepthook = handle_exit
     
     listener_thread = threading.Thread(target=listener, args=(on_press,), daemon=True)
     listener_thread.start()
     
+    try:
+        theme = configparser.ConfigParser()
+        theme_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.cfg"
+        theme.read(theme_path, encoding = "utf-8-sig")
+        print(theme["DEFAULT"]["atheme"])
+        
+    except Exception: 
+        actual_print("Could not read your theme file.\nMake sure you got this file\nfrom PyPi, not GitHub! This file\nis required to function.\n\n(cd/concinnity.cfg)")
+        sys.exit(0)
+        
+    try:
+        storage = configparser.ConfigParser()
+        storage_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.data"
+        storage.read(storage_path, encoding = "utf-8-sig")
+    except Exception:
+        storage["data"] = {}
+        storage["data"]["counters_default"] = str(counters_default)
+        storage["data"]["increment_default"] = str(increment_default)
+        storage["data"]["decrement_default"] = str(decrement_default)
+        storage["data"]["title_hint"] = str(title_hint)
+        storage["data"]["counter_name"] = str(counter_name)
+        storage["data"]["counter_val"] = str(counter_val)
+        storage["data"]["increment"] = str(increment)
+        storage["data"]["decrement"] = str(decrement)
+        
+        storage_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.data"
+        with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+            storage.write(storagefile)
+        
     while(1):
         size_x, size_y = shutil.get_terminal_size((20, 20))
         
@@ -172,9 +221,15 @@ def main():
                 elif key == "-":
                     key = safe_input("press incr/decr to remove\nor '-' again to cancel\n> ")
                     del_counter(key)
+                elif key == "h":
+                    active = False
+                    help_menu()
+                    active = True
+                elif key == "\\":
+                    sys.exit(0)
                 key_queue.task_done()
             
-            if len(counter_name) >= 1: # need to figure out a way to justify lines. unequal sizes of counters, maybe? an option for this?
+            if len(counter_name) >= 1:
                 clear()
                 title_msg = ""
                 i = 0
@@ -198,7 +253,7 @@ def main():
                         else:
                             min_width = 7
                         
-                        inner_width = max(len(name), len(val), min_width)
+                        inner_width = max(len(name), len(f"-- {val} --"), min_width)
                         box_width = inner_width + 4
                         
                         if used_width + box_width > size_x:
@@ -238,9 +293,3 @@ def main():
                     
 if __name__ == "__main__":
     main()
-
-# [ name
-# ] color 
-# ` value 
-# = create 
-# - delete
