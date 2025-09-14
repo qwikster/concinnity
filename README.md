@@ -12,7 +12,7 @@ clean and aesthetic CLI counter tool!\
 - press `]` to change the color in the same way! from a theme, or custom
 - use `'` to manually input the value of any counter
 - `-` will delete a counter
-- this app will save automatically when you modify any counter!
+- saves all content automatically!
 
 ## installation
 `pip install concinnity`, or if you're on certain flavors of linux (it'll tell you) `pipx install concinnity`.\
@@ -23,6 +23,10 @@ arch: `sudo pacman -S python-pipx` to get that tool
 you can run the command `concinnity`, but i will admit it's a pain to memorize...\
 feel free to type `counter` instead :)
 
-## source
-certain amounts of my code from [hackaclime](https://github.com/qwikster/hackaCLIme/) was reused in this project;\
-however, no AI was used.
+## config
+you may customize the default names or keys for new counters in the project's folder. on linux, using pipx:
+`~/.local/share/pipx/venvs/concinnity/lib/python3.13/site-packages/concinnity/concinnity.data`
+i'm not sure where you'll find the project on other platforms, sorrie
+
+## credit
+certain amounts of code from my other project [hackaclime](https://github.com/qwikster/hackaCLIme/) was reused in this project.

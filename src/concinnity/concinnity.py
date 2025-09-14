@@ -1,10 +1,10 @@
-import math
 import time
 import os
 import sys
 import configparser
 import random
 import shutil
+import ast
 from queue import Queue, Empty
 import threading
 
@@ -105,9 +105,13 @@ def clear():
     actual_print("\033[2J\033[H", end="")
 
 def increment_val(key):
-    global increment, counter_name, counter_val
+    global increment, counter_name, counter_val, storage
     index = increment.index(key)
     counter_val[index] += 1
+    
+    storage["data"]["increment"]
+    with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+        storage.write(storagefile)
 
 def decrement_val(key):
     global increment, counter_name, counter_val
@@ -125,7 +129,6 @@ def new_counter():
             
         counter_name.append(counters_default[len(counter_name)])
         counter_val.append(0)
-        actual_print(f"{counter_name}, {increment}, {decrement}, {counter_val}")
 
 def del_counter(key):
     global counter_name, counter_val, increment, decrement, title_msg
@@ -144,6 +147,11 @@ def del_counter(key):
         decrement.pop(del_key)
         counter_name.pop(del_key)
         counter_val.pop(del_key)
+
+def load_storage(storage, storage_path):
+    global counter_val, counter_name, increment, decrement, increment_default, decrement_default, title_hint, counters_default
+    
+    counters_default = ast.literal_eval(storage["data"]["counters_default"])
 
 def help_menu():
     size_x, size_y = shutil.get_terminal_size((20, 20))
@@ -184,11 +192,14 @@ def main():
         actual_print("Could not read your theme file.\nMake sure you got this file\nfrom PyPi, not GitHub! This file\nis required to function.\n\n(cd/concinnity.cfg)")
         sys.exit(0)
         
-    try:
+    if os.path.exists(f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.data"):
         storage = configparser.ConfigParser()
         storage_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.data"
         storage.read(storage_path, encoding = "utf-8-sig")
-    except Exception:
+    
+    else:
+        storage = configparser.ConfigParser()
+        
         storage["data"] = {}
         storage["data"]["counters_default"] = str(counters_default)
         storage["data"]["increment_default"] = str(increment_default)
@@ -200,9 +211,14 @@ def main():
         storage["data"]["decrement"] = str(decrement)
         
         storage_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.data"
+        
         with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
             storage.write(storagefile)
+            
+        storage.read(storage_path, encoding = "utf-8-sig")
         
+    load_storage(storage, storage_path)
+    
     while(1):
         size_x, size_y = shutil.get_terminal_size((20, 20))
         
