@@ -1,3 +1,6 @@
+# TODO: add colors for just boxes, don't bother otherwise
+
+
 import time
 import os
 import sys
@@ -12,7 +15,7 @@ counters_default = ["apples", "apricots", "bananas", "blackberries", "blueberrie
 random.shuffle(counters_default)
 increment_default = list("1234567890asdfghjkl;")
 decrement_default = list("qwertyuiopzxcvbnm,./")
-title_hint = "[h]elp, [\\] quit" 
+title_hint = "['] help, [\\] quit" 
 title_msg = ""
 
 counter_val = []
@@ -254,7 +257,6 @@ def help_menu():
     print(f"┃=/+│ {" Create a new counter".ljust(size_x - 8)}┃")
     print(f"┃ - │ {" Delete a counter".ljust(size_x - 8)}┃")
     print(f"┃ [ │ {" Edit a name".ljust(size_x - 8)}┃")
-    print(f"┃ ] │ {" Change to a color".ljust(size_x - 8)}┃")
     print(f"┃~/`│ {" Manually choose value".ljust(size_x - 8)}┃")
     print("┠───┴" + "─" * (size_x - 7) + "┨")
     print("┃" + " Hit [ENTER] to return".ljust(size_x - 3) + "┃")
@@ -272,9 +274,7 @@ def main():
     
     listener_thread = threading.Thread(target=listener, args=(on_press,), daemon=True)
     listener_thread.start()
-    
-    actual_print(f"{color.NUMBER}number {color.NAME}name {color.BUTTON}button {color.ERROR}error {color.PROMPT}prompt")
-    
+     
     try:
         theme = configparser.ConfigParser()
         theme_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.cfg"
@@ -329,7 +329,7 @@ def main():
                 elif key == "-" or key == "_":
                     key = safe_input("press incr/decr of a counter\nto delete it, or '-'\nagain to cancel:\n\n> ")
                     del_counter(key)
-                elif key == "h":
+                elif key == "'":
                     active = False
                     help_menu()
                     active = True

@@ -9,7 +9,6 @@ clean and aesthetic CLI counter tool!
 - adaptive based on your terminal size and shape!
 - press `=` (the plus key) to create a new counter instantly
 - press the `[` key then any increment or decrement key to edit the name or any counter (i recommend you use short names)
-- press `]` to change the color in the same way! from a theme, or custom
 - use `'` to manually input the value of any counter
 - `-` will delete a counter
 - saves all content automatically!
@@ -30,3 +29,5 @@ i'm not sure where you'll find the project on other platforms, sorrie
 
 ## credit
 certain amounts of code from my other project [hackaclime](https://github.com/qwikster/hackaCLIme/) was reused in this project.
+
+i ran out of time to add theme support; maybe i'll revisit this in the future.

@@ -2,9 +2,10 @@
 counters_default = ['strawberries', 'oranges', 'watermelons', 'cherries', 'mandarin', 'pears', 'raspberries', 'peaches', 'blueberries', 'tangerines', 'limes', 'plums', 'apples', 'nectarines', 'tetopears', 'lemons', 'cantaloupes', 'dates', 'clementines', 'cranberries', 'mangoes', 'blackberries', 'grapefruit', 'apricots', 'currants', 'pineapples', 'bananas', 'kiwis']
 increment_default = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', 'a', 's', 'd', 'f', 'g', 'h', 'j', 'k', 'l', ';']
 decrement_default = ['q', 'w', 'e', 'r', 't', 'y', 'u', 'i', 'o', 'p', 'z', 'x', 'c', 'v', 'b', 'n', 'm', ',', '.', '/']
-title_hint = [h]elp, [\] quit
+title_hint = ['] help, [\\] quit
 counter_name = []
 counter_val = []
 increment = []
 decrement = []
+counter_color = []
 
