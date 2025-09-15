@@ -62,7 +62,24 @@ else: # linux
         
         finally:
             termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
-            
+
+class color: # \x1b[38;2;RED;GREEN;BLUEm
+    NUMBER = "\x1b[38;2;20;255;220m"
+    NAME = "\x1b[38;2;30;30;100m"
+    BUTTON = "\x1b[38;2;200;20;200m"
+    ERROR = "\x1b[38;2;255;0;100m"
+    PROMPT = "\x1b[38;2;180;200;200m"
+    COLOR_1 = "\x1b[38;2;9;230;169m"
+    COLOR_2 = "\x1b[38;2;9;230;169m"
+    COLOR_3 = "\x1b[38;2;9;230;169m"
+    COLOR_4 = "\x1b[38;2;9;230;169m"
+    COLOR_5 = "\x1b[38;2;9;230;169m"
+    COLOR_6 = "\x1b[38;2;9;230;169m"
+    COLOR_7 = "\x1b[38;2;9;230;169m"
+    COLOR_8 = "\x1b[38;2;9;230;169m"
+    
+    RANDOM_COLOR = [COLOR_1, COLOR_2, COLOR_3, COLOR_4, COLOR_5, COLOR_6, COLOR_7, COLOR_8]
+
 def safe_input(prompt = "> "):
     global listening
     listening = False
@@ -105,30 +122,44 @@ def clear():
     actual_print("\033[2J\033[H", end="")
 
 def increment_val(key):
-    global increment, counter_name, counter_val, storage
+    global increment, counter_name, counter_val, storage, storage_path
     index = increment.index(key)
     counter_val[index] += 1
     
-    storage["data"]["increment"]
+    storage["data"]["counter_val"] = str(counter_val)
+    
     with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
         storage.write(storagefile)
 
 def decrement_val(key):
-    global increment, counter_name, counter_val
+    global increment, counter_name, counter_val, storage, storage_path
     index = decrement.index(key)
     counter_val[index] -= 1
+    
+    storage["data"]["counter_val"] = str(counter_val)
+    
+    with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+        storage.write(storagefile)
 
 def new_counter():
-    global counters_default, counter_name, increment_default, decrement_default, increment, decrement, counter_val
+    global counters_default, counter_name, increment_default, decrement_default, increment, decrement, counter_val, storage, storage_path
     if len(counter_name) == 20:
-        actual_print("You have all the counters we can fit on your keyboard!") # REFACTOR once i set up dynUI
+        actual_print("you have all the counters\nwe can fit on your keyboard!")
         time.sleep(1)
     else:
         increment.append(increment_default[len(increment)])
         decrement.append(decrement_default[len(decrement)])
-            
+        
         counter_name.append(counters_default[len(counter_name)])
         counter_val.append(0)
+            
+        storage["data"]["counter_name"] = str(counter_name)
+        storage["data"]["counter_val"] = str(counter_val)
+        storage["data"]["increment"] = str(increment)
+        storage["data"]["decrement"] = str(decrement)
+
+        with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+            storage.write(storagefile)
 
 def del_counter(key):
     global counter_name, counter_val, increment, decrement, title_msg
@@ -143,15 +174,75 @@ def del_counter(key):
             except ValueError:
                 actual_print("this counter doesn't exist!")
                 time.sleep(3)
-        increment.pop(del_key)
-        decrement.pop(del_key)
+                return
+            
+        increment.pop(len(increment) - 1)
+        decrement.pop(len(decrement) - 1)
         counter_name.pop(del_key)
         counter_val.pop(del_key)
+        
+        storage["data"]["counter_name"] = str(counter_name)
+        storage["data"]["counter_val"] = str(counter_val)
+        storage["data"]["increment"] = str(increment)
+        storage["data"]["decrement"] = str(decrement)
+        
+        with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+            storage.write(storagefile)
+
+def set_value(key, num):
+    global counter_val, increment, decrement, storage, storage_path
+    if key == "`" or key == "~":
+        return
+    else:
+        try:
+            mod_key = increment.index(key)
+        except ValueError:
+            try:
+                mod_key = decrement.index(key)
+            except ValueError:
+                actual_print("this counter doesn't exist!")
+                time.sleep(3)
+                return
+
+        counter_val[mod_key] = num
+        storage["data"]["counter_val"] = str(counter_val)
+        with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+            storage.write(storagefile)
+            
+def set_name(key, name):
+    global counter_name, increment, decrement, storage, storage_path
+    if key == "[" or key == "{":
+        return
+    else:
+        try:
+            mod_key = increment.index(key)
+        except ValueError:
+            try:
+                mod_key = decrement.index(key)
+            except ValueError:
+                actual_print("this counter doesn't exist!")
+                time.sleep(3)
+                return
+        try:
+            counter_name[mod_key] = name
+            storage["data"]["counter_name"] = str(counter_name)
+        except Exception:
+            actual_print("invalid name! special chars?")
+            time.sleep(2)
+        with open(storage_path, 'w', encoding = "utf-8-sig") as storagefile:
+            storage.write(storagefile)
 
 def load_storage(storage, storage_path):
     global counter_val, counter_name, increment, decrement, increment_default, decrement_default, title_hint, counters_default
     
     counters_default = ast.literal_eval(storage["data"]["counters_default"])
+    increment_default = ast.literal_eval(storage["data"]["increment_default"])
+    decrement_default = ast.literal_eval(storage["data"]["decrement_default"])
+    counter_name = ast.literal_eval(storage["data"]["counter_name"])
+    counter_val = ast.literal_eval(storage["data"]["counter_val"])
+    increment = ast.literal_eval(storage["data"]["increment"])
+    decrement = ast.literal_eval(storage["data"]["decrement"])
+    title_hint = storage["data"]["title_hint"]
 
 def help_menu():
     size_x, size_y = shutil.get_terminal_size((20, 20))
@@ -182,11 +273,12 @@ def main():
     listener_thread = threading.Thread(target=listener, args=(on_press,), daemon=True)
     listener_thread.start()
     
+    actual_print(f"{color.NUMBER}number {color.NAME}name {color.BUTTON}button {color.ERROR}error {color.PROMPT}prompt")
+    
     try:
         theme = configparser.ConfigParser()
         theme_path = f"{os.path.dirname(os.path.abspath(__file__))}/concinnity.cfg"
         theme.read(theme_path, encoding = "utf-8-sig")
-        print(theme["DEFAULT"]["atheme"])
         
     except Exception: 
         actual_print("Could not read your theme file.\nMake sure you got this file\nfrom PyPi, not GitHub! This file\nis required to function.\n\n(cd/concinnity.cfg)")
@@ -232,17 +324,32 @@ def main():
                     increment_val(key)
                 elif key in decrement:
                     decrement_val(key)
-                elif key == "=":
+                elif key == "=" or key == "+":
                     new_counter()
-                elif key == "-":
-                    key = safe_input("press incr/decr to remove\nor '-' again to cancel\n> ")
+                elif key == "-" or key == "_":
+                    key = safe_input("press incr/decr of a counter\nto delete it, or '-'\nagain to cancel:\n\n> ")
                     del_counter(key)
                 elif key == "h":
                     active = False
                     help_menu()
                     active = True
-                elif key == "\\":
+                elif key == "\\" or key == "|":
                     sys.exit(0)
+                elif key == "`" or key == "~":
+                    key = safe_input("press incr/decr of a counter\nto change its value,\nor ~ / ` again to cancel:\n\n> ")
+                    while(1):
+                        try:
+                            num = safe_input("enter value:\n\n> ")
+                            num = int(num)
+                            break
+                        except ValueError:
+                            print("this is not a number!")
+                            pass
+                    set_value(key, num)
+                elif key == "[" or key == "{":
+                    key = safe_input("press incr/decr of a counter\nto change its name,\nor '[' again to cancel:\n\n> ")
+                    name = safe_input("enter name:\n\n> ")
+                    set_name(key, name)
                 key_queue.task_done()
             
             if len(counter_name) >= 1:

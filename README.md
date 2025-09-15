@@ -1,5 +1,5 @@
 # concinnity
-clean and aesthetic CLI counter tool!\
+clean and aesthetic CLI counter tool!
 > harmony or elegance of design in adaptation of parts to a whole or to each other
 
 ## features
