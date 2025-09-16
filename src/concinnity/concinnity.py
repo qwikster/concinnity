@@ -104,8 +104,10 @@ def on_press(key: str):
     key_queue.put(key)
 
 def handle_exit(exc_type, exc_value, exc_traceback):
+    global fd, old_settings, listening
     if exc_type is KeyboardInterrupt:
         actual_print("peace out")
+        termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
         sys.exit(0)
     else:
         sys.__excepthook__(exc_type, exc_value, exc_traceback)
@@ -334,6 +336,8 @@ def main():
                     help_menu()
                     active = True
                 elif key == "\\" or key == "|":
+                    global fd, old_settings, listening
+                    termios.tcsetattr(fd, termios.TCSADRAIN, old_settings)
                     sys.exit(0)
                 elif key == "`" or key == "~":
                     key = safe_input("press incr/decr of a counter\nto change its value,\nor ~ / ` again to cancel:\n\n> ")
